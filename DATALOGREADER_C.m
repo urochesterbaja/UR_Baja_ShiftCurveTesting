@@ -11,8 +11,14 @@ time = datalog(:,1);
 sig1 = (datalog(:,2));
 sig2 = (datalog(:,3));
 
+noise_std = 0.2 * (max(sig1) - min(sig1));
+noise = noise_std * randn(size(sig1));
+
+sig1_noisy = sig1 + noise;
+
 [RPM1,firstIndex1] = inputToRPM_C(time, sig1, samplingRate);
 [RPM2,firstIndex2] = inputToRPM_C(time, sig2, samplingRate);
+[RPM1_Noisy, firstIndex1_noisy] = inputToRPM_C(time, sig1_noisy, samplingRate);
 
 firstIndex = max(firstIndex1,firstIndex2);
 lastIndex = length(RPM1) - firstIndex;
@@ -24,6 +30,7 @@ hold on
 % plot(time(firstIndex:lastIndex),RPM2(firstIndex:lastIndex));
 plot(time, RPM1);
 plot(time, RPM2);
+plot(time, RPM1_Noisy);
 
 %xlim([11 30])
 ylabel("RPM");

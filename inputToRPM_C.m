@@ -3,19 +3,43 @@
     
     lastStart = time(1);
     
-    
+    %basic threshold calculation
     high = max(sig);
     low = min(sig);
-    
-    %TODO: Replace this with schmitt trigger or something else like a
-    %kalman filter
-    %For now, calculates the midpoint between the min and max value in the
-    %data
+ 
     threshold = (high + low) / 2;
+
+    %Adaptive Threshold
+    k = 0.35;
+    high = prctile(sig, 95);
+    low = prctile(sig, 5);
+    
+    mid = (high + low) / 2;
+    amp = high - low;
+    
+    th_high = mid + k * amp;
+    th_low = mid - k * amp;
+    
+    binarysig = zeros(size(sig));
+    
+    if sig(1) > mid
+        state = true;
+    else
+        state = false;
+    end
+    
+    for i = 1:length(sig)
+        if ~state && sig(i) > th_high
+            state = true;
+        elseif state && sig(i) < th_low
+            state = false;
+        end
+        binarysig(i) = state;
+    end
 
     %converts the square wave into a binary signal by setting any value
     %greater than the threshold to 1, and any value less than to 0.
-    binarysig = sig > threshold;
+    % binarysig = sig > threshold;
 
     %IDK TBH but it didnt work without it, something to do with the types
     %in the matrix, shrug
