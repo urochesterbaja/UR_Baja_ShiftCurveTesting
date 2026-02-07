@@ -4,7 +4,6 @@
 
 % It then plots the inputs over time and plots a shift curve.
 
-samplingRate = 100000;
 datalog = readmatrix("raw_data.csv"); % edit "file"
 time = datalog(:,1);
 %seconds = time.*1E-6;
@@ -16,21 +15,16 @@ noise = noise_std * randn(size(sig1));
 
 sig1_noisy = sig1 + noise;
 
-[RPM1,firstIndex1] = inputToRPM_C(time, sig1, samplingRate);
-[RPM2,firstIndex2] = inputToRPM_C(time, sig2, samplingRate);
-[RPM1_Noisy, firstIndex1_noisy] = inputToRPM_C(time, sig1_noisy, samplingRate);
-
-firstIndex = max(firstIndex1,firstIndex2);
-lastIndex = length(RPM1) - firstIndex;
+% [RPM1] = inputToRPM_C(time, sig1);
+[RPM1] = inputToRPM_C(sig1);
+[RPM2] = inputToRPM_C(sig2);
+[RPM1_Noisy] = inputToRPM_C(sig1_noisy);
 
 % First, we plot the two inputs to make sure that our inputs make sense
 f = figure(1);
 hold on
-% plot(time(firstIndex:lastIndex),RPM1(firstIndex:lastIndex)); %plot RPM
-% plot(time(firstIndex:lastIndex),RPM2(firstIndex:lastIndex));
 plot(time, RPM1);
 plot(time, RPM2);
-plot(time, RPM1_Noisy);
 
 %xlim([11 30])
 ylabel("RPM");
@@ -46,9 +40,9 @@ grid on
 % Note - with new teensy code, these units most likely need to change (or
 % we need to do more post processing on it, as the points no longer
 % automatically subtract)
-
-%plot(time,RPM1);
-%plot(time,RPM2);
+% 
+% plot(time,RPM1);
+% plot(time,RPM2);
 
 ylabel("RPM");
 xlabel("Time (seconds)");
@@ -57,20 +51,20 @@ legend(["Input 1", "Input2"], location='northeast');
 hold off
 
 
-REDUCTION = 1;
-MPH = RPM2 .* REDUCTION;
+% REDUCTION = 0.8;
+% MPH = RPM2 .* REDUCTION
 
-
-
+REDUCTION = 7.41;
+MPH = (RPM2 ./REDUCTION) .* 5.75 .* 60 ./ 5280;
 
 
 % Now we plot the shift curve, the secondary plotted over the primary.
 f2 = figure(2);
 hold on
 grid on
-plot(RPM1(firstIndex:lastIndex),MPH(firstIndex:lastIndex));
+plot(MPH, RPM1);
 title("Shift Curve?")
 %ylim([0, 200]);
 ylabel("RPM 1")
-xlabel("RPM 2")
+xlabel("MPH")
 hold off
