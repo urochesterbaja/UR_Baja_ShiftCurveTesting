@@ -1,0 +1,84 @@
+% BAJA ELECTRONICS DATA AQ THING
+% This code takes input of a single csv file in the format of:
+%    (time since teensy code started, primary, secondary)
+
+% It then plots the inputs over time and plots a shift curve.
+
+datalog = readmatrix("raw_data.csv"); % edit "file"
+% time = datalog(:,1);
+%seconds = time.*1E-6;
+inverted_sig1 = (datalog(:,2));
+inverted_sig2 = (datalog(:,3));
+
+sig1 = -inverted_sig1;
+sig2 = -inverted_sig2;
+
+
+noise_std = 0.2 * (max(sig1) - min(sig1));
+noise = noise_std * randn(size(sig1));
+
+sig1_noisy = sig1 + noise;
+
+% [RPM1] = inputToRPM_C(time, sig1);
+
+[RPM1, Time1] = inputToRPM(sig1);
+[RPM2, Time2] = inputToRPM(sig2);
+
+samplingRate = 100000;
+
+cutoff = (samplingRate/2);
+RPM1 = RPM1(cutoff:end - cutoff);
+RPM2 = RPM2(cutoff:end - cutoff);
+Time1 = Time1(cutoff:end - cutoff);
+Time2 = Time2(cutoff:end - cutoff);
+% [RPM1_Noisy] = inputToRPM_C(sig1_noisy);
+
+% First, we plot the two inputs to make sure that our inputs make sense
+f = figure(1);
+hold on
+plot(Time1, RPM1);
+plot(Time2, RPM2);
+% xlim([0, 15]);
+
+%xlim([11 30])
+ylabel("RPM");
+xlabel("Time (seconds)");
+title("Individual RPM plots");
+legend(["Primary", "Secondary"], location='northeast');
+hold off
+hold on
+grid on
+
+% Convert units and convert from counts -> frequency
+% 
+% Note - with new teensy code, these units most likely need to change (or
+% we need to do more post processing on it, as the points no longer
+% automatically subtract)
+% 
+% plot(time,RPM1);
+% plot(time,RPM2);
+
+ylabel("RPM");
+xlabel("Time (seconds)");
+title("Individual RPM plots");
+legend(["Input 1", "Input2"], location='northeast');
+hold off
+
+
+% REDUCTION = 0.8;
+% MPH = RPM2 .* REDUCTION
+
+REDUCTION = 7.41;
+MPH = (RPM2 ./REDUCTION) .* 5.75 .* 60 ./ 5280;
+
+
+% Now we plot the shift curve, the secondary plotted over the primary.
+f2 = figure(2);
+hold on
+grid on
+plot(MPH, RPM1);
+title("Shift Curve?")
+%ylim([0, 200]);
+ylabel("RPM 1")
+xlabel("MPH")
+hold off
