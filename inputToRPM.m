@@ -2,8 +2,8 @@ function [RPM, Time]=inputToRPM(sig)
 
 % CONSTANTS -- Do not change unless you know what these do please!
 % -------------------------------------------------------------
-samplingRate = 100000;
-fitPoints = 100;
+samplingRate = 10000;
+fitPoints = 50;
 %sl = [-2.35, 2.1];
 fitType = 'smooth';
 % -------------------------------------------------------------
