@@ -4,7 +4,7 @@
 
 % It then plots the inputs over time and plots a shift curve    .
 
-datalog = readmatrix("raw_data_teensy_newwwww.csv"); % edit "file"
+datalog = readmatrix("Data/Teensy/raw_data_teensy_newwwww.csv"); % edit "file"
 % time = datalog(:,1);
 %seconds = time.*1E-6;
 % inverted_sig1 = (datalog(:,2));
