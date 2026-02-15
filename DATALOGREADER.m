@@ -2,13 +2,15 @@
 % This code takes input of a single csv file in the format of:
 %    (time since teensy code started, primary, secondary)
 
-% It then plots the inputs over time and plots a shift curve    .
+% It then plots the inputs over time and plots a shift curve.
 
 datalog = readmatrix("Data/Teensy/raw_data_teensy_newwwww.csv"); % edit "file"
 % time = datalog(:,1);
 %seconds = time.*1E-6;
 % inverted_sig1 = (datalog(:,2));
 % inverted_sig2 = (datalog(:,3));
+
+samplingRate = 10000;
 
 inverted_sig1 = (datalog(:,1));
 inverted_sig2 = (datalog(:,2));
@@ -31,8 +33,6 @@ sig1_noisy = sig1 + noise;
 
 [RPM1, Time1] = inputToRPM(sig1);
 [RPM2, Time2] = inputToRPM(sig2);
-
-samplingRate = 10000;
 
 cutoff = (samplingRate/2);
 RPM1 = RPM1(cutoff:end - cutoff);
