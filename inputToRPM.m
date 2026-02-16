@@ -1,11 +1,9 @@
-function [RPM, Time]=inputToRPM(sig)
+function [RPM, Time]=inputToRPM(sig, samplingRate)
 
-% CONSTANTS -- Do not change unless you know what these do please!
+% CONSTANTS
 % -------------------------------------------------------------
-samplingRate = 10000;
-fitPoints = 50;
-%sl = [-2.35, 2.1];
-fitType = 'smooth';
+fitPoints = 50; % amount of points for polynomial fit (think nth degree polynomial)
+fitType = 'smooth'; % smooth / linear
 % -------------------------------------------------------------
 
 %RPM = tachorpm(sig,samplingRate,'FitPoints', fitPoints, 'StateLevels',sl, 'FitType',fitType);

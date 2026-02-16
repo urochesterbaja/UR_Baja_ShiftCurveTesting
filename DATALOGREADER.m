@@ -1,92 +1,72 @@
 % BAJA ELECTRONICS DATA AQ THING
-% This code takes input of a single csv file in the format of:
-%    (time since teensy code started, primary, secondary)
+% This code takes input of a single csv file where each row is in the
+% following format:
+% [CVT Primary Sensor Voltage, CVT Secondary Sensor Voltage]
 
-% It then plots the inputs over time and plots a shift curve.
-
-datalog = readmatrix("Data/Teensy/raw_data_teensy_newwwww.csv"); % edit "file"
-% time = datalog(:,1);
-%seconds = time.*1E-6;
-% inverted_sig1 = (datalog(:,2));
-% inverted_sig2 = (datalog(:,3));
+% Plots the inputs over time and a shift curve.
 
 samplingRate = 10000;
 
-inverted_sig1 = (datalog(:,1));
-inverted_sig2 = (datalog(:,2));
+% gets the most recently modified file
+% not perfect, but for quick viewing, this is recommended.
+d = dir('Data/Teensy/*.csv');
+[~, index] = max([d.datenum]);
+youngestFile = fullfile(d(index).folder, d(index).name);
 
-% this translates the signal to have the minimum value 
-% not needed for tachorpm, but maybe when we switch to teensy this can be
-% used
-% sig1 = -inverted_sig1 - min(-inverted_sig1);
-% sig2 = -inverted_sig2 - min(-inverted_sig2);
+datalog = readmatrix(youngestFile);
 
-sig1 = inverted_sig1;
-sig2 = inverted_sig2;
+% datalog = readmatrix("Data/Teensy/raw_data_teensy_newwwww.csv"); % edit "file"
 
-noise_std = 0.2 * (max(sig1) - min(sig1));
-noise = noise_std * randn(size(sig1));
+sig1 = (datalog(:,1));
+sig2 = (datalog(:,2));
 
-sig1_noisy = sig1 + noise;
+% noise_std = 0.2 * (max(sig1) - min(sig1));
+% noise = noise_std * randn(size(sig1));
+% 
+% sig1_noisy = sig1 + noise;
 
-% [RPM1] = inputToRPM_C(time, sig1);
+[RPM1, Time1] = inputToRPM(sig1, samplingRate);
+[RPM2, Time2] = inputToRPM(sig2, samplingRate);
 
-[RPM1, Time1] = inputToRPM(sig1);
-[RPM2, Time2] = inputToRPM(sig2);
-
+% cutting off the first/last 0.5 secodnds of data, since polynomial fit has
+% weird effects. This is mainly so that the graph looks good and scaling
+% doesnt get thrown off.
 cutoff = (samplingRate/2);
 RPM1 = RPM1(cutoff:end - cutoff);
 RPM2 = RPM2(cutoff:end - cutoff);
 Time1 = Time1(cutoff:end - cutoff);
 Time2 = Time2(cutoff:end - cutoff);
-% [RPM1_Noisy] = inputToRPM_C(sig1_noisy);
 
-% First, we plot the two inputs to make sure that our inputs make sense
+% Plot RPMs of primary and secondary vs time
 f = figure(1);
 hold on
 plot(Time1, RPM1);
 plot(Time2, RPM2);
-% xlim([0, 15]);
 
-%xlim([11 30])
 ylabel("RPM");
 xlabel("Time (seconds)");
 title("Individual RPM plots");
 legend(["Primary", "Secondary"], location='northeast');
-hold off
-hold on
 grid on
-
-% Convert units and convert from counts -> frequency
-% 
-% Note - with new teensy code, these units most likely need to change (or
-% we need to do more post processing on it, as the points no longer
-% automatically subtract)
-% 
-% plot(time,RPM1);
-% plot(time,RPM2);
-
-ylabel("RPM");
-xlabel("Time (seconds)");
-title("Individual RPM plots");
-legend(["Input 1", "Input2"], location='northeast');
 hold off
 
 
 % REDUCTION = 0.8;
 % MPH = RPM2 .* REDUCTION
 
+% Plot secondary vs primary RPM. 
+% Tons of magic numbers loosely based on real car to get
+% secondary RPM --> MPH,
+% but can always remove and just plot RPM vs RPM.
 REDUCTION = 7.41;
 MPH = (RPM2 ./REDUCTION) .* 5.75 .* 60 ./ 5280;
 
-
-% Now we plot the shift curve, the secondary plotted over the primary.
 f2 = figure(2);
 hold on
-grid on
 plot(MPH, RPM1);
-title("Shift Curve?")
-%ylim([0, 200]);
+
 ylabel("RPM 1")
 xlabel("MPH")
+title("Shift Curve!")
+grid on
 hold off
