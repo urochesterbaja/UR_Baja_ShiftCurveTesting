@@ -13,8 +13,8 @@ samplingRate = 10000;
 d = dir('Data/Teensy/*.csv');
 names = {d.name};
 
-% Regex for: raw_data_YYYY-MM-DD-HH-MM-SS.csv
-pattern = '^raw_data_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.csv$';
+% Regex for: CVT_Shift_YYYY-MM-DD-HH-MM-SS.csv
+pattern = '^CVT_Shift_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}\.csv$';
 
 % Keep only matching filenames
 validMask = ~cellfun(@isempty, regexp(names, pattern, 'once'));
