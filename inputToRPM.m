@@ -1,14 +1,22 @@
-function [RPM, Time]=inputToRPM(sig, samplingRate)
+function [RPM, Time]=inputToRPM(sig, samplingRate, ppr, fitType)
+    arguments
+        sig
+        samplingRate = 10000;
+        ppr = 1;
+        fitType = 'smooth'; % smooth/linear
+    end
 
 % CONSTANTS
 % -------------------------------------------------------------
 fitPoints = 50; % amount of points for polynomial fit (think nth degree polynomial)
-fitType = 'smooth'; % smooth / linear
 % -------------------------------------------------------------
 
-%RPM = tachorpm(sig,samplingRate,'FitPoints', fitPoints, 'StateLevels',sl, 'FitType',fitType);
+% RPM = tachorpm(sig,samplingRate,'FitPoints', fitPoints, 'StateLevels',sl, 'FitType',fitType);
 
-[RPM, Time] = tachorpm(sig,samplingRate,'FitPoints', fitPoints, 'FitType',fitType);
+
+
+% tachorpm(sig,samplingRate,'FitPoints', fitPoints, 'FitType',fitType);
+[RPM, Time] = tachorpm(sig,samplingRate,FitPoints=fitPoints, FitType=fitType, PulsesPerRev=ppr);
 
 
 % binarysig = sigToBinary(sig);
