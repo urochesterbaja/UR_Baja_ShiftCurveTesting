@@ -23,8 +23,8 @@ foreach ($drive in $removableDrives) {
             New-Item -ItemType Directory -Path $destinationFolder | Out-Null
         }
 
-        $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-        $destinationFile = Join-Path $destinationFolder "raw_data_$timestamp.csv"
+        $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm"
+        $destinationFile = Join-Path $destinationFolder "CVT_Shift_$timestamp.csv"
 
         # Copy instead of move
         Copy-Item $sourceFile $destinationFile -Force
