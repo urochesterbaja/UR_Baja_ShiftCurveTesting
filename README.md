@@ -8,3 +8,7 @@ This contains all of the code for collecting and plotting the data for the shift
 - [@Liam Nott](https://www.github.com/lnottt)
 - [@Samuel Tarr](https://www.github.com/Vespertilo)
 
+
+# Requirements:
+- [Matlab](https://www.mathworks.com/products/matlab.html)
+- Mathworks Signal Processing Toolbox
